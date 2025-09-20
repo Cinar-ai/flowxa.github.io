@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FlowX — Markets</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <style>
+    :root {
+      --dark-purple: #2E0249;
+      --pink: #A91079;
+      --magenta: #F806CC;
+      --bg: #FAFAFA;
+      --text: #222;
+      --white: #fff;
+      --green-gradient: linear-gradient(135deg, #00b09b, #96c93d);
+      --red-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1; }
+    /* FlowX Navbar */
+    .navbar {
+      background: rgba(46, 2, 73, 0.7);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .navbar .logo {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .navbar .logo i {
+      font-size: 1.4em;
+      margin-right: 0.35em;
+      color: var(--magenta);
+    }
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+    .navbar li {
+      font-size: 1rem;
+    }
+    .navbar a {
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.3s;
+      font-weight: 600;
+    }
+    .navbar a:hover {
+      color: var(--magenta);
+    }
+
+    /* Markets Section */
+    .markets-section {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .search-wrapper {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      width: 100%;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .search-input {
+      width: 100%;
+      padding: .65rem 2.2rem .65rem 1rem;
+      border-radius: 25px;
+      border: 2px solid var(--pink);
+      font-size: 1rem;
+      box-sizing: border-box;
+      outline: none;
+      color: var(--text);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(169,16,121,0.15);
+    }
+    .search-input::placeholder {
+      color: rgba(169,16,121,0.5);
+    }
+    .search-input:focus {
+      border-color: var(--magenta);
+      box-shadow: 0 0 8px var(--magenta);
+      background: #f7f1fa;
+    }
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      font-size: 1.1rem;
+      color: rgba(169,16,121,0.7);
+      cursor: pointer;
+      display: none;
+      padding: 0;
+      line-height: 1;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .clear-btn:hover { color: var(--magenta); }
+    .clear-btn.visible { display: block; }
+
+    /* Market Cards */
+    .markets-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 2rem;
+    }
+    .market-card {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(46, 2, 73, 0.1);
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      border: 2px solid transparent;
+      outline: none;
+      will-change: transform, box-shadow;
+      transform-origin: center bottom;
+    }
+    .market-card:hover,
+    .market-card:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px 0 rgba(46, 2, 73, 0.13);
+      border-color: var(--magenta);
+    }
+    .market-card img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f3f2fa;
+      margin-bottom: .7em;
+      flex-shrink: 0;
+    }
+    .market-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1 1 auto;
+      width: 100%;
+    }
+    .market-title {
+      display: flex;
+      align-items: center;
+      gap: .4em;
+      min-width: 0;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--dark-purple);
+      margin-bottom: 0.5rem;
+      text-align: center;
+      user-select: none;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+    }
+    .coin-symbol {
+      font-weight: 400;
+      color: #888;
+      margin-left: .3em;
+      flex-shrink: 0;
+      max-width: 5em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 1rem;
+    }
+    .coin-name {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .market-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55em 1.1em;
+      font-size: 1.03em;
+      margin-top: .18em;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+    }
+    .price {
+      font-weight: 600;
+      color: var(--dark-purple);
+    }
+    .marketcap {
+      color: #666;
+    }
+    /* Market change with gradient backgrounds */
+    .change-pos {
+      background: var(--green-gradient);
+      color: var(--white) !important;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 0.25em 0.9em;
+      box-shadow: 0 0 8px rgba(0, 176, 155, 0.7);
+      display: inline-block;
+    }
+    .change-neg {
+      background: var(--red-gradient);
+      color: var(--white) !important;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 0.25em 0.9em;
+      box-shadow: 0 0 8px rgba(255, 65, 75, 0.7);
+      display: inline-block;
+    }
+    .rank {
+      color: #888;
+      font-size: .96em;
+    }
+    /* Market card links/buttons highlight colors */
+    .market-card a,
+    .market-card button {
+      color: var(--pink);
+      text-decoration: none;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.18s;
+    }
+    .market-card a:hover,
+    .market-card button:hover {
+      color: var(--magenta);
+    }
+    /* Spinner */
+    .loading-spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--magenta);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 3rem auto;
+      grid-column: 1/-1;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(46,2,73,0.25);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      max-width: 95vw;
+      height: 600px;
+      max-height: 80vh;
+      background: var(--white);
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 rgba(46,2,73,0.19), 0 2px 8px #0004;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--dark-purple);
+      cursor: pointer;
+      transition: color 0.2s;
+      z-index: 1;
+    }
+    .modal-close:hover { color: var(--magenta); }
+    .modal-search-wrapper {
+      padding: 0.5rem 1.2rem 0 1.2rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: #fafafc;
+    }
+    .modal-search-input {
+      width: 100%;
+      max-width: 400px;
+      padding: .5rem 2.2rem .5rem 1rem;
+      border-radius: 25px;
+      border: 2px solid var(--pink);
+      font-size: 1rem;
+      box-sizing: border-box;
+      outline: none;
+      color: var(--text);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(169,16,121,0.15);
+    }
+    .modal-search-input::placeholder {
+      color: rgba(169,16,121,0.5);
+    }
+    .modal-search-input:focus {
+      border-color: var(--magenta);
+      box-shadow: 0 0 8px var(--magenta);
+      background: #f7f1fa;
+    }
+    .modal-clear-btn {
+      position: absolute;
+      right: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      font-size: 1.1rem;
+      color: rgba(169,16,121,0.7);
+      cursor: pointer;
+      display: none;
+      padding: 0;
+      line-height: 1;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .modal-clear-btn:hover { color: var(--magenta); }
+    .modal-clear-btn.visible { display: block; }
+    .modal-content {
+      flex: 1;
+      overflow: hidden;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      background: #fafafc;
+      min-height: 0;
+    }
+    #tradingview-widget {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 0;
+    }
+    @media (max-width: 700px) {
+      .markets-section { padding: 0 .3rem; }
+      .search-wrapper { max-width: 99vw; }
+      .market-card { padding: .7rem 1rem; }
+      .modal {
+        width: 98vw;
+        height: 65vh;
+        max-height: 75vh;
+        min-width: 0;
+      }
+      .market-details { flex-direction: column; align-items: flex-start;}
+    }
+    @media (max-width: 600px) {
+      .markets-cards {
+        gap: 1rem;
+      }
+      .market-card {
+        min-width: 180px;
+        max-width: 220px;
+        padding: 1.4rem 1.6rem;
+      }
+      .search-wrapper {
+        max-width: 100%;
+        padding: 0 1rem;
+      }
+    }
+    /* Footer */
+    .footer {
+      background: var(--dark-purple);
+      color: var(--white);
+      text-align: center;
+      padding: 1.5rem 0 1rem 0;
+      font-size: 1rem;
+      margin-top: 2rem;
+      user-select: none;
+      position: relative;
+    }
+    .footer .footer-social {
+      margin-bottom: 0.5rem;
+    }
+    .footer .footer-social a {
+      color: var(--white);
+      margin: 0 0.5rem;
+      font-size: 1.3rem;
+      opacity: 0.82;
+      transition: opacity 0.2s, color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .footer .footer-social a:hover {
+      color: var(--magenta);
+      opacity: 1;
+    }
+    .footer-links {
+      margin: 0.6rem 0 0.2rem 0;
+      font-size: 0.97rem;
+    }
+    .footer-links a {
+      color: var(--white);
+      text-decoration: underline;
+      margin: 0 0.4rem;
+      opacity: 0.82;
+      transition: color 0.2s, opacity 0.2s;
+    }
+    .footer-links a:hover {
+      color: var(--magenta);
+      opacity: 1;
+    }
+    /* Responsive Navbar */
+    @media (max-width: 900px) {
+      .navbar .container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .navbar ul {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+      }
+      .navbar li {
+        width: 100%;
+      }
+      .navbar a {
+        display: block;
+        width: 100%;
+      }
+    }
+    @media (max-width: 600px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .navbar .container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .navbar ul {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+      }
+      .navbar li {
+        width: 100%;
+      }
+      .navbar a {
+        display: block;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- FlowX Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo"><i class="fas fa-globe"></i> FlowX</div>
+      <ul>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="alerts.html">Alerts</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+  <main>
+    <section class="markets-section">
+      <div class="search-wrapper">
+        <input type="text" class="search-input" placeholder="Search by coin name or symbol..." aria-label="Search coins">
+        <button class="clear-btn" aria-label="Clear search">&times;</button>
+      </div>
+      <div class="markets-cards" id="markets-cards">
+        <div class="loading-spinner" id="loading-spinner"></div>
+      </div>
+    </section>
+    <div class="modal-overlay" id="modal-overlay" style="display:none;"></div>
+    <div class="modal" id="coin-modal" role="dialog" aria-modal="true" style="display:none;">
+      <button class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
+      <div class="modal-search-wrapper">
+        <input type="text" class="modal-search-input" placeholder="Search coins in modal..." aria-label="Search coins in modal">
+        <button class="modal-clear-btn" aria-label="Clear modal search">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div id="tradingview-widget" aria-live="polite" aria-busy="true"></div>
+      </div>
+    </div>
+  </main>
+  <!-- FlowX Footer -->
+  <footer class="footer">
+    <div class="footer-social">
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+      <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+      <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">About</a> | <a href="contact.html">Contact</a>
+    </div>
+    © 2025 FlowX. All rights reserved.
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/all.min.js"></script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+    // --- DOM refs
+    const marketsCards = document.getElementById('markets-cards');
+    const searchInput = document.querySelector('.search-input');
+    const clearBtn = document.querySelector('.clear-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const modal = document.getElementById('coin-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const modalSearchInput = document.querySelector('.modal-search-input');
+    const modalClearBtn = document.querySelector('.modal-clear-btn');
+    const tradingViewContainer = document.getElementById('tradingview-widget');
+
+    // --- Data
+    let allCoins = [];
+    let filteredCoins = [];
+    let currentCoin = null;
+    let tvWidget = null;
+    let apiError = false;
+
+    // --- Fetch real-time coin data from CoinGecko (250 coins from page 1)
+    async function fetchCoins() {
+      const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false';
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('API error');
+        const data = await resp.json();
+        // Map to our format
+        return data.map((c, idx) => ({
+          id: c.id,
+          name: c.name,
+          symbol: c.symbol,
+          image: c.image,
+          price: c.current_price,
+          marketCap: c.market_cap,
+          change24h: c.price_change_percentage_24h,
+          rank: c.market_cap_rank
+        }));
+      } catch (e) {
+        apiError = true;
+        return [];
+      }
+    }
+
+    // --- Render Market Cards
+    function renderMarkets(coins) {
+      marketsCards.innerHTML = '';
+      if (apiError) {
+        marketsCards.innerHTML = '<p style="text-align:center;color:#ea3943;font-weight:600;">Market data could not be loaded.<br>Please try again later.</p>';
+        return;
+      }
+      if (!coins.length) {
+        marketsCards.innerHTML = '<p style="text-align:center;color:#888;">No coins found.</p>';
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      for (const c of coins) {
+        const card = document.createElement('div');
+        card.className = 'market-card';
+        let changeClass = c.change24h > 0 ? 'change-pos' : (c.change24h < 0 ? 'change-neg' : '');
+        card.innerHTML = `
+          <img src="${c.image}" alt="${c.symbol} logo" loading="lazy"
+               onerror="this.onerror=null;this.src='https://via.placeholder.com/48?text=NA';">
+          <div class="market-info">
+            <div class="market-title">
+              <span class="coin-name" title="${c.name}">${c.name}</span>
+              <span class="coin-symbol" title="${c.symbol}">(${c.symbol.toUpperCase()})</span>
+            </div>
+            <div class="market-details">
+              <span class="price">Price: $${(c.price !== null && c.price !== undefined) ? Number(c.price).toLocaleString(undefined,{maximumFractionDigits:8}) : 'N/A'}</span>
+              <span class="marketcap">Market Cap: $${c.marketCap ? c.marketCap.toLocaleString() : 'N/A'}</span>
+              <span>24h: <span class="${changeClass}">${(c.change24h !== null && c.change24h !== undefined) ? Number(c.change24h).toFixed(2) : '0.00'}%</span></span>
+              <span class="rank">Rank: #${c.rank ? c.rank : 'N/A'}</span>
+            </div>
+          </div>
+        `;
+        card.addEventListener('click', () => openModal(c));
+        fragment.appendChild(card);
+      }
+      marketsCards.appendChild(fragment);
+    }
+
+    // --- Filtering
+    function filterCoins(val, coins) {
+      val = val.trim().toLowerCase();
+      if (!val) return coins;
+      return coins.filter(c =>
+        (c.name && c.name.toLowerCase().includes(val)) ||
+        (c.symbol && c.symbol.toLowerCase().includes(val))
+      );
+    }
+
+    // --- Main search events
+    searchInput.addEventListener('input', () => {
+      const val = searchInput.value;
+      clearBtn.style.display = val.length ? 'block' : 'none';
+      filteredCoins = filterCoins(val, allCoins);
+      renderMarkets(filteredCoins);
+    });
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearBtn.style.display = 'none';
+      filteredCoins = [...allCoins];
+      renderMarkets(filteredCoins);
+    });
+
+    // --- Modal search events
+    modalSearchInput.addEventListener('input', () => {
+      const val = modalSearchInput.value;
+      modalClearBtn.style.display = val.length ? 'block' : 'none';
+      if (!currentCoin) return;
+      const modalFiltered = filterCoins(val, allCoins);
+      if (!modalFiltered.length) {
+        tradingViewContainer.innerHTML = '<p style="text-align:center;color:#888;margin-top:1rem;">No coins found.</p>';
+        tradingViewContainer.setAttribute('aria-busy', 'false');
+        return;
+      }
+      if (!modalFiltered.some(c => c.id === currentCoin.id)) {
+        openModal(modalFiltered[0]);
+      }
+    });
+    modalClearBtn.addEventListener('click', () => {
+      modalSearchInput.value = '';
+      modalClearBtn.style.display = 'none';
+      if (currentCoin) openModal(currentCoin);
+    });
+
+    // --- Modal open/close and TradingView widget
+    function openModal(coin) {
+      currentCoin = coin;
+      modal.style.display = 'flex';
+      modalOverlay.style.display = 'block';
+      modalSearchInput.value = '';
+      modalClearBtn.style.display = 'none';
+      tradingViewContainer.innerHTML = '';
+      tradingViewContainer.setAttribute('aria-busy', 'true');
+
+      // Map common coins for real TradingView widget, fallback to SYMBOLUSDT, then BTCUSDT
+      const sym = coin.symbol ? coin.symbol.toUpperCase() : '';
+      const symbolMap = {
+        BTC: 'BINANCE:BTCUSDT',
+        ETH: 'BINANCE:ETHUSDT',
+        SOL: 'BINANCE:SOLUSDT',
+        BNB: 'BINANCE:BNBUSDT',
+        LTC: 'BINANCE:LTCUSDT',
+        XRP: 'BINANCE:XRPUSDT',
+        ADA: 'BINANCE:ADAUSDT',
+        DOGE: 'BINANCE:DOGEUSDT',
+        DOT: 'BINANCE:DOTUSDT',
+        MATIC: 'BINANCE:MATICUSDT'
+      };
+      let tvSymbol = symbolMap[sym] || `BINANCE:${sym}USDT`;
+
+      // Remove previous widget
+      if (tvWidget && typeof tvWidget.remove === 'function') {
+        try { tvWidget.remove(); } catch {}
+        tvWidget = null;
+      }
+      // Helper to load widget and handle fallback
+      function loadWidget(symbol, fallback) {
+        if (typeof TradingView !== "undefined" && typeof TradingView.widget === "function") {
+          try {
+            tvWidget = new TradingView.widget({
+              "container_id": "tradingview-widget",
+              "width": "100%",
+              "height": "100%",
+              "symbol": symbol,
+              "interval": "60",
+              "timezone": "Etc/UTC",
+              "theme": "light",
+              "style": "1",
+              "locale": "en",
+              "toolbar_bg": "#f1f3f6",
+              "enable_publishing": false,
+              "allow_symbol_change": true,
+              "hide_top_toolbar": false,
+              "hide_legend": false,
+              "withdateranges": true,
+              "studies": ["MASimple@tv-basicstudies"],
+              "disabled_features": ["use_localstorage_for_settings"],
+              "autosize": true,
+              "container_id": "tradingview-widget",
+              "overrides": {},
+              "loading_screen": { backgroundColor: "#fafafc" },
+              "events": {
+                "onReady": function() {
+                  tradingViewContainer.setAttribute('aria-busy', 'false');
+                }
+              }
+            });
+            // TradingView's widget does not provide a clear error callback,
+            // so we use a timeout to fallback if chart fails to load after a short delay.
+            let fallbackTimeout;
+            fallbackTimeout = setTimeout(() => {
+              // If fallback is provided and not already BTCUSDT, try fallback
+              if (fallback && symbol !== fallback) {
+                if (tvWidget && typeof tvWidget.remove === 'function') {
+                  try { tvWidget.remove(); } catch {}
+                  tvWidget = null;
+                }
+                loadWidget(fallback, null);
+              } else if (symbol === fallback || !fallback) {
+                // Show error if fallback also fails
+                tradingViewContainer.innerHTML = '<p style="text-align:center;color:#ea3943;font-weight:600;margin-top:1rem;">Chart could not be loaded.</p>';
+                tradingViewContainer.setAttribute('aria-busy', 'false');
+              }
+            }, 3000);
+            // If widget loads, clear the fallback timeout
+            setTimeout(() => {
+              tradingViewContainer.setAttribute('aria-busy', 'false');
+              clearTimeout(fallbackTimeout);
+            }, 2000);
+          } catch (e) {
+            // Try fallback if error
+            if (fallback && symbol !== fallback) {
+              if (tvWidget && typeof tvWidget.remove === 'function') {
+                try { tvWidget.remove(); } catch {}
+                tvWidget = null;
+              }
+              loadWidget(fallback, null);
+            } else {
+              tradingViewContainer.innerHTML = '<p style="text-align:center;color:#ea3943;font-weight:600;margin-top:1rem;">Chart could not be loaded.</p>';
+              tradingViewContainer.setAttribute('aria-busy', 'false');
+            }
+          }
+        } else {
+          tradingViewContainer.innerHTML = '<p style="text-align:center;color:#888;margin-top:1rem;">TradingView widget not available.</p>';
+          tradingViewContainer.setAttribute('aria-busy', 'false');
+        }
+      }
+      // If not in symbolMap, try SYMBOLUSDT, fallback to BTCUSDT
+      if (symbolMap[sym]) {
+        loadWidget(tvSymbol, null);
+      } else {
+        loadWidget(tvSymbol, 'BINANCE:BTCUSDT');
+      }
+    }
+    function closeModal() {
+      modal.style.display = 'none';
+      modalOverlay.style.display = 'none';
+      currentCoin = null;
+      modalSearchInput.value = '';
+      modalClearBtn.style.display = 'none';
+      tradingViewContainer.innerHTML = '';
+      tradingViewContainer.setAttribute('aria-busy', 'false');
+      if (tvWidget && typeof tvWidget.remove === 'function') {
+        try { tvWidget.remove(); } catch {}
+        tvWidget = null;
+      }
+    }
+    modalClose.onclick = closeModal;
+    modalOverlay.onclick = closeModal;
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+
+    // --- Initial page load
+    async function init() {
+      loadingSpinner.style.display = 'block';
+      allCoins = [];
+      filteredCoins = [];
+      apiError = false;
+      try {
+        allCoins = await fetchCoins();
+        filteredCoins = [...allCoins];
+      } catch { apiError = true; }
+      loadingSpinner.style.display = 'none';
+      renderMarkets(filteredCoins);
+      // Do NOT open modal or set currentCoin on initial page load
+    }
+    // Initial load
+    init();
+  </script>
+</body>
+</html>

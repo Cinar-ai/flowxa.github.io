@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FlowX — Crypto News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    body { font-family:'Poppins',sans-serif; background:#fafafa; color:#333; }
+    main {
+      flex: 1;
+    }
+    .navbar { background:rgba(46,2,73,.7); color:#fff; display:flex; justify-content:center; padding:1rem; }
+    .navbar .container { display:flex; justify-content:space-between; max-width:1100px; width:100%; }
+    .navbar ul { list-style:none; display:flex; gap:1.5rem; margin:0; padding:0; }
+    .navbar a { color:#fff; text-decoration:none; font-weight:600; }
+    .navbar a:hover { color:#F806CC; }
+
+    .hero { background:linear-gradient(135deg,#2E0249,#A91079); color:#fff; text-align:center; padding:4rem 1rem 3rem; }
+    .hero h1 { font-size:2.5rem; margin-bottom:.5rem; }
+    .hero p { font-size:1.2rem; }
+
+    .news-section { max-width:900px; margin:2rem auto; padding:0 1rem; }
+    .news-section h2 { text-align:center; font-size:2rem; color:#A91079; margin-bottom:2rem; }
+    .news-card { background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:1.5rem; margin-bottom:1.5rem; transition: transform 0.2s; }
+    .news-card:hover { transform:translateY(-3px); box-shadow:0 4px 14px rgba(0,0,0,0.12); }
+    .news-card h3 { margin-top:0; margin-bottom:0.5rem; color:#2E0249; }
+    .news-card time { font-size:0.9rem; color:#777; }
+    .news-card p { margin:0.8rem 0; color:#444; }
+    .news-card a { color:#A91079; text-decoration:none; font-weight:600; }
+    .news-card a:hover { color:#F806CC; }
+
+    .footer { background:#2E0249; color:#fff; text-align:center; padding:1.2rem 0; margin-top:2rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo"><i class="fas fa-globe"></i> FlowX</div>
+      <ul>
+        <li><a href="markets.html">Markets</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="alerts.html">Alerts</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <h1>FlowX — Crypto News</h1>
+      <p>Stay updated with the latest cryptocurrency news from CoinMarketCap</p>
+    </section>
+
+    <section class="news-section">
+      <h2>Latest Crypto News</h2>
+      <div id="news-container">Loading news...</div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2025 FlowX. All rights reserved.</footer>
+
+  <script>
+document.addEventListener("DOMContentLoaded", async function() {
+  const container = document.getElementById("news-container");
+  container.innerHTML = "Loading news...";
+
+  try {
+    const res = await fetch("http://localhost:3000/api/news");
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    if (data.data && Array.isArray(data.data)) {
+      data.data.forEach(article => {
+        const card = document.createElement("div");
+        card.className = "news-card";
+        card.innerHTML = `
+          <h3>${article.title}</h3>
+          <time>${new Date(article.created_at).toLocaleString()}</time>
+          <p>${article.meta_description || ""}</p>
+          <a href="${article.url}" target="_blank">Read more</a>
+        `;
+        container.appendChild(card);
+      });
+    } else {
+      container.innerHTML = "<p>No news available right now.</p>";
+    }
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Failed to load news.</p>";
+  }
+});
+</script>
+</body>
+</html>
